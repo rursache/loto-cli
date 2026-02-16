@@ -191,6 +191,30 @@ var emptyStyle = lipgloss.NewStyle().
 var separatorStyle = lipgloss.NewStyle().
 	Foreground(colorBorder)
 
+// Stats styles
+var (
+	statsCardStyle = lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(colorBorder).
+		Padding(0, 1).
+		MarginBottom(1)
+
+	statsSectionHeader = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(colorAccent).
+		MarginBottom(1).
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderBottom(true).
+		BorderForeground(colorBorder)
+
+	statsLabelStyle = lipgloss.NewStyle().
+		Foreground(colorTextDim).
+		Width(18)
+
+	statsValueStyle = lipgloss.NewStyle().
+		Foreground(colorText)
+)
+
 // gameColor returns the appropriate color for a game type
 func gameColor(game string) lipgloss.Color {
 	switch game {

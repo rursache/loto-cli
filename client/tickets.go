@@ -49,7 +49,7 @@ func (c *Client) GetTickets(page int) ([]models.Ticket, int, error) {
 	return tickets, total, nil
 }
 
-// GetAllTickets fetches all pages of ticket history
+// GetAllTickets fetches all pages of ticket history and enriches won tickets with prize amounts
 func (c *Client) GetAllTickets() ([]models.Ticket, error) {
 	firstPage, total, err := c.GetTickets(1)
 	if err != nil {
@@ -76,7 +76,58 @@ func (c *Client) GetAllTickets() ([]models.Ticket, error) {
 		allTickets = append(allTickets, tickets...)
 	}
 
+	// Fetch prize amounts for won tickets
+	for i := range allTickets {
+		if allTickets[i].Status == models.StatusWon && allTickets[i].DetailURL != "" {
+			prize, err := c.GetTicketPrize(allTickets[i].DetailURL)
+			if err == nil && prize != "" {
+				allTickets[i].Prize = prize
+			}
+		}
+	}
+
 	return allTickets, nil
+}
+
+// GetTicketPrize fetches a ticket detail page and extracts the total prize amount.
+// The prize is in a <tfoot> row with "TOTAL CÂȘTIG" label.
+func (c *Client) GetTicketPrize(detailURL string) (string, error) {
+	req, err := c.newRequest("GET", detailURL)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Referer", ticketHistoryBaseURL+"?page_no=1")
+
+	resp, err := c.doRequest(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("status %d", resp.StatusCode)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var prize string
+	doc.Find("tfoot tr").Each(func(_ int, row *goquery.Selection) {
+		text := strings.TrimSpace(row.Text())
+		if strings.Contains(text, "TOTAL") {
+			// The last <th> in the row contains the prize amount
+			row.Find("th").Each(func(_ int, th *goquery.Selection) {
+				val := strings.TrimSpace(th.Text())
+				if strings.Contains(val, "RON") {
+					prize = val
+				}
+			})
+		}
+	})
+
+	return prize, nil
 }
 
 // parseTotalCount extracts the total ticket count from the pagination text

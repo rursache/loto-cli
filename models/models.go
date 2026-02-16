@@ -29,6 +29,7 @@ type Ticket struct {
 	Status    TicketStatus
 	PlayedAt  string // e.g. "Jo 12 feb 2026, Ora 18:58"
 	DetailURL string
+	Prize     string // e.g. "30,00 RON" — only populated from detail page for won tickets
 }
 
 // TicketStatus represents the status of a ticket
