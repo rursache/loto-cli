@@ -1,0 +1,12 @@
+# Binary
+loto-cli
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
