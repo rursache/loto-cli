@@ -30,6 +30,7 @@ go install github.com/rursache/loto-cli@latest
 git clone https://github.com/rursache/loto-cli.git
 cd loto-cli
 go build -o loto-cli .
+./loto-cli          # run the built binary
 ```
 
 ## Configuration
