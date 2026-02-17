@@ -18,6 +18,7 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) < 1 {
+		maybePromptSkillInstall()
 		runTUI()
 		return
 	}
@@ -37,7 +38,10 @@ func main() {
 		withClient(runStats)
 	case "config":
 		runConfig()
+	case "setup-skills":
+		runSetupSkills()
 	case "tui":
+		maybePromptSkillInstall()
 		runTUI()
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", cmd)
@@ -53,11 +57,12 @@ Usage:
   loto-cli [command]
 
 Commands:
-  results     Print latest extraction results
-  tickets     Print ticket history
-  stats       Print ticket statistics
-  config      Print config file path
-  tui         Start interactive TUI (default when no command)
+  results       Print latest extraction results
+  tickets       Print ticket history
+  stats         Print ticket statistics
+  config        Print config file path
+  setup-skills  Install AI skills for Claude Code and other agents
+  tui           Start interactive TUI (default when no command)
 
 Options:
   help, -h        Show this help message
